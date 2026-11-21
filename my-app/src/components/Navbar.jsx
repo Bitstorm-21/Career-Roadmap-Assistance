@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, ArrowRight, User, LogOut } from 'lucide-react';
+import { Sparkles, ArrowRight, User, LogOut, ShieldCheck } from 'lucide-react';
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -43,6 +43,17 @@ const Navbar = () => {
         <div className="flex items-center space-x-3">
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
+              {/* Admin Portal Button - Only visible if logged-in user is an admin */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-600 border border-red-500/50 transition-all duration-200 shadow-[0_0_18px_rgba(239,68,68,0.45)] transform hover:-translate-y-0.5"
+                >
+                  <ShieldCheck className="w-4 h-4 text-red-200" />
+                  <span>Admin Portal</span>
+                </Link>
+              )}
+
               {/* Profile Button for Logged-In User -> Navigates to /profile */}
               <Link
                 to="/profile"

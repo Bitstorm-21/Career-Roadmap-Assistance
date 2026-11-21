@@ -78,6 +78,9 @@ export const resumeApi = {
 export const careerApi = {
   getAll: () => api.get('/api/careers'),
   getById: (id) => api.get(`/api/careers/${id}`),
+  create: (data) => api.post('/api/careers', data), // { name, category, description }
+  addSkill: (careerId, data) => api.post(`/api/careers/${careerId}/skills`, data), // { skillId, requiredLevel, mandatory }
+  removeSkill: (careerId, skillId) => api.delete(`/api/careers/${careerId}/skills/${skillId}`),
   getRecommended: () => api.get('/api/recommendations/careers'),
   getSkillGaps: (careerId) => api.get(`/api/recommendations/careers/${careerId}/skill-gaps`),
   getSemanticAnalysis: (careerId) => api.get(`/api/recommendations/careers/${careerId}/semantic-analysis`),
@@ -109,6 +112,16 @@ export const assessmentApi = {
 // Resources & Progress
 export const resourceApi = {
   getAll: () => api.get('/api/resources'),
+  create: (data) => api.post('/api/resources', data), // { skillId, title, description, url, provider, resourceType, free }
+  search: (title, freeOnly = false) =>
+    api.get(`/api/resources/search?title=${encodeURIComponent(title)}&freeOnly=${freeOnly}`),
+  getByTitle: (title, freeOnly = false) =>
+    api.get(`/api/resources/title/${encodeURIComponent(title)}?freeOnly=${freeOnly}`),
+};
+
+// Admin Management APIs
+export const adminApi = {
+  getDashboard: () => api.get('/api/admin/dashboard'),
 };
 
 export const progressApi = {

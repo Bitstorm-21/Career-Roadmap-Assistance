@@ -7,7 +7,8 @@ import {
   skillsApi, 
   assessmentApi, 
   aiFastApi,
-  profileApi
+  profileApi,
+  resourceApi
 } from '../services/api';
 import toast from 'react-hot-toast';
 import SkillAssessment from '../components/SkillAssessment';
@@ -31,6 +32,9 @@ import {
   User,
   LogOut,
   ChevronRight,
+  ChevronLeft,
+  Search,
+  Filter,
   GraduationCap,
   Building,
   Calendar,
@@ -87,6 +91,167 @@ const DashboardPage = () => {
     githubUrl: '',
     linkedinUrl: '',
   });
+
+  // Learning Resources State (All Available Courses with Pagination 5)
+  const [availableCourses, setAvailableCourses] = useState([]);
+  const [selectedCourseDropdown, setSelectedCourseDropdown] = useState('ALL');
+  const [courseSearchKeyword, setCourseSearchKeyword] = useState('');
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 5;
+
+  const defaultAvailableCourses = [
+    {
+      id: 'avail-1',
+      title: 'Spring Boot 3 & Microservices Architecture Masterclass',
+      provider: 'Coursera / VMware',
+      resourceType: 'COURSE',
+      free: false,
+      skillName: 'Spring Boot',
+      description: 'Master production microservices with Spring Boot 3, Spring Cloud, Netflix Eureka, API Gateway, Docker, and PostgreSQL.',
+      url: 'https://www.coursera.org/search?query=Spring+Boot+Microservices',
+    },
+    {
+      id: 'avail-2',
+      title: 'Complete Java Programming: Zero to Production',
+      provider: 'freeCodeCamp',
+      resourceType: 'VIDEO',
+      free: true,
+      skillName: 'Java',
+      description: 'Comprehensive core Java, Object-Oriented Programming (OOP), Collections Framework, Multithreading, and Modern Java 21 features.',
+      url: 'https://www.youtube.com/results?search_query=java+full+course',
+    },
+    {
+      id: 'avail-3',
+      title: 'Docker & Kubernetes: The Practical Guide',
+      provider: 'Udemy / TechWorld with Nana',
+      resourceType: 'COURSE',
+      free: false,
+      skillName: 'Docker & DevOps',
+      description: 'Learn Docker containerization, Docker Compose, Kubernetes cluster architecture, Helm charts, and CI/CD deployment pipelines.',
+      url: 'https://www.udemy.com/topic/docker/',
+    },
+    {
+      id: 'avail-4',
+      title: 'Data Structures & Algorithms in Java',
+      provider: 'NeetCode / MIT OpenCourseWare',
+      resourceType: 'TUTORIAL',
+      free: true,
+      skillName: 'DSA',
+      description: 'Deep dive into Arrays, Linked Lists, Trees, Graphs, Dynamic Programming, and algorithmic problem solving patterns for technical interviews.',
+      url: 'https://neetcode.io/practice',
+    },
+    {
+      id: 'avail-5',
+      title: 'React 19 & Next.js: Full Stack Web Development',
+      provider: 'Official Documentation',
+      resourceType: 'DOCUMENTATION',
+      free: true,
+      skillName: 'React',
+      description: 'Modern component-driven development with React Hooks, Server Components, State Management, and Tailwind CSS.',
+      url: 'https://react.dev/learn',
+    },
+    {
+      id: 'avail-6',
+      title: 'PostgreSQL Database Design & Advanced SQL Optimization',
+      provider: 'PostgreSQL Official Docs',
+      resourceType: 'DOCUMENTATION',
+      free: true,
+      skillName: 'PostgreSQL',
+      description: 'Relational database schema modeling, ACID transactions, index optimization (B-Tree, GIN), query planning, and connection pooling.',
+      url: 'https://www.postgresql.org/docs/',
+    },
+    {
+      id: 'avail-7',
+      title: 'Machine Learning & Deep Learning Specialization',
+      provider: 'DeepLearning.AI / Coursera',
+      resourceType: 'COURSE',
+      free: false,
+      skillName: 'AI & ML',
+      description: 'Supervised learning, Neural Networks, Transformers, CNNs, model evaluation, and deployment using PyTorch and TensorFlow.',
+      url: 'https://www.coursera.org/specializations/machine-learning-introduction',
+    },
+    {
+      id: 'avail-8',
+      title: 'Practical Cybersecurity & OWASP Security Defense',
+      provider: 'TryHackMe / PortSwigger',
+      resourceType: 'TUTORIAL',
+      free: true,
+      skillName: 'Cybersecurity',
+      description: 'Hands-on web application penetration testing, OWASP Top 10 mitigation, JWT security, cryptography, and defense-in-depth architecture.',
+      url: 'https://portswigger.net/web-security',
+    },
+  ];
+
+  const fetchAvailableCourses = async () => {
+    setLoadingCourses(true);
+    try {
+      const res = await resourceApi.getAll();
+      const backendList = Array.isArray(res.data) ? res.data : [];
+
+      const backendTitles = new Set(
+        backendList.map((c) => (c.title || '').trim().toLowerCase())
+      );
+      const combined = [
+        ...backendList,
+        ...defaultAvailableCourses.filter(
+          (c) => !backendTitles.has((c.title || '').trim().toLowerCase())
+        ),
+      ];
+
+      setAvailableCourses(combined);
+      setFilteredCourses(combined);
+    } catch (e) {
+      console.warn('Could not fetch backend courses, using default available courses:', e);
+      setAvailableCourses(defaultAvailableCourses);
+      setFilteredCourses(defaultAvailableCourses);
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
+  const handleSearchCourses = (dropdownVal = selectedCourseDropdown, keywordVal = courseSearchKeyword) => {
+    setLoadingCourses(true);
+    setCurrentPage(1);
+
+    let results = [...availableCourses];
+
+    // Filter by dropdown title if not ALL
+    if (dropdownVal && dropdownVal !== 'ALL') {
+      results = results.filter(
+        (c) => (c.title || '').trim().toLowerCase() === dropdownVal.trim().toLowerCase()
+      );
+    }
+
+    // Filter by keyword if entered
+    const q = keywordVal.trim().toLowerCase();
+    if (q) {
+      results = results.filter((c) => {
+        const titleMatch = (c.title || '').toLowerCase().includes(q);
+        const descMatch = (c.description || '').toLowerCase().includes(q);
+        const providerMatch = (c.provider || '').toLowerCase().includes(q);
+        const skillMatch = (c.skillName || '').toLowerCase().includes(q);
+        const typeMatch = (c.resourceType || '').toLowerCase().includes(q);
+        return titleMatch || descMatch || providerMatch || skillMatch || typeMatch;
+      });
+    }
+
+    setFilteredCourses(results);
+    setLoadingCourses(false);
+    if (results.length > 0) {
+      toast.success(`Found ${results.length} available course${results.length === 1 ? '' : 's'}`);
+    } else {
+      toast('No matching courses found', { icon: 'ℹ️' });
+    }
+  };
+
+  const handleResetCourseSearch = () => {
+    setSelectedCourseDropdown('ALL');
+    setCourseSearchKeyword('');
+    setFilteredCourses(availableCourses);
+    setCurrentPage(1);
+  };
 
   // Initial Data Fetch
   useEffect(() => {
@@ -159,6 +324,9 @@ const DashboardPage = () => {
         // Profile not created yet
         setUserProfile(null);
       }
+
+      // 6. Fetch all available courses
+      await fetchAvailableCourses();
     } catch (err) {
       console.warn('Backend load note:', err);
     }
@@ -518,6 +686,18 @@ const DashboardPage = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('learningResources')}
+            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
+              activeTab === 'learningResources'
+                ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.45)]'
+                : 'bg-[#110d17] text-gray-400 hover:text-white hover:bg-red-950/30 border border-red-950'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Learning Resources</span>
+          </button>
+
+          <button
             onClick={() => {
               setActiveTab('viewProfile');
               setShowProfileForm(false);
@@ -557,11 +737,19 @@ const DashboardPage = () => {
                       onChange={(e) => setTargetCareer(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#140f1c] border border-red-900/40 text-white text-sm focus:outline-none focus:border-red-500"
                     >
-                      <option value="Backend Developer">Backend Developer</option>
-                      <option value="Frontend Developer">Frontend Developer</option>
-                      <option value="Full Stack Developer">Full Stack Developer</option>
-                      <option value="DevOps & Cloud Engineer">DevOps & Cloud Engineer</option>
-                      <option value="AI / ML Engineer">AI / ML Engineer</option>
+                      {Array.from(new Set([
+                        ...careers.map((c) => c.name || c.title).filter(Boolean),
+                        'Backend Developer',
+                        'Frontend Developer',
+                        'Full Stack Developer',
+                        'DevOps & Cloud Engineer',
+                        'AI / ML Engineer',
+                        'Cybersecurity Analyst',
+                      ])).map((careerOption) => (
+                        <option key={careerOption} value={careerOption}>
+                          {careerOption}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -1012,7 +1200,311 @@ const DashboardPage = () => {
         )}
 
         {/* ========================================================
-            TAB 6: VIEW / CREATE / UPDATE STUDENT PROFILE
+            TAB 6: LEARNING RESOURCES (ALL AVAILABLE COURSES + PAGINATION 5)
+        ======================================================== */}
+        {activeTab === 'learningResources' && (
+          <div className="space-y-6">
+            
+            {/* Header & Search Controls Card */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#0f0b15]/95 border border-red-900/40 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/10 blur-[130px] rounded-full pointer-events-none" />
+
+              <div className="relative z-10 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-red-950/60 border border-red-800/40 text-xs font-semibold text-red-300 mb-2">
+                      <BookOpen className="w-3.5 h-3.5 text-red-400" />
+                      <span>Curated Course & Resource Hub</span>
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white hero-serif">
+                      Available Learning Resources & Courses
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
+                      Search and explore all available learning resources, certifications, and technical courses. Select a course from the dropdown or search by keyword, then click <span className="text-red-400 font-semibold">Search Course</span>.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={fetchAvailableCourses}
+                    disabled={loadingCourses}
+                    className="self-start sm:self-auto flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#140f1c] border border-red-900/40 text-gray-300 hover:text-white hover:border-red-600/50 transition-all text-xs font-semibold cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-red-400 ${loadingCourses ? 'animate-spin' : ''}`} />
+                    <span>Refresh Courses</span>
+                  </button>
+                </div>
+
+                {/* Dropdown & Query Controls */}
+                <div className="p-5 rounded-2xl bg-[#140f1c] border border-red-900/40 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    
+                    {/* Course Dropdown */}
+                    <div className="md:col-span-5">
+                      <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <BookOpen className="w-3.5 h-3.5 text-red-400" />
+                        <span>Select Available Course</span>
+                      </label>
+                      <select
+                        value={selectedCourseDropdown}
+                        onChange={(e) => setSelectedCourseDropdown(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0d0914] border border-red-900/50 text-white text-sm focus:outline-none focus:border-red-500 truncate"
+                      >
+                        <option value="ALL">-- All Available Courses ({availableCourses.length}) --</option>
+                        {Array.from(new Set(availableCourses.map((c) => c.title).filter(Boolean))).map((courseTitle) => (
+                          <option key={courseTitle} value={courseTitle}>
+                            {courseTitle}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Search Keyword */}
+                    <div className="md:col-span-4">
+                      <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <Search className="w-3.5 h-3.5 text-red-400" />
+                        <span>Keyword Search (Optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Search title, provider, skill..."
+                        value={courseSearchKeyword}
+                        onChange={(e) => setCourseSearchKeyword(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSearchCourses();
+                        }}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0d0914] border border-red-900/50 text-white text-sm focus:outline-none focus:border-red-500 placeholder-gray-500"
+                      />
+                    </div>
+
+                    {/* Actions */}
+                    <div className="md:col-span-3 flex items-end space-x-2">
+                      <button
+                        onClick={() => handleSearchCourses()}
+                        disabled={loadingCourses}
+                        className="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-600 shadow-[0_0_20px_rgba(239,68,68,0.45)] transition-all flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer transform hover:-translate-y-0.5"
+                      >
+                        <Search className="w-4 h-4" />
+                        <span>Search Course</span>
+                      </button>
+
+                      {(selectedCourseDropdown !== 'ALL' || courseSearchKeyword) && (
+                        <button
+                          onClick={handleResetCourseSearch}
+                          className="py-2.5 px-3 rounded-xl text-xs font-semibold text-gray-400 hover:text-white bg-[#0d0914] border border-red-900/40 hover:border-red-600/50 transition-colors cursor-pointer"
+                          title="Reset Filters"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Below Search Button: Courses Listed One by One with Pagination (5 per page) */}
+            <div className="space-y-4">
+              
+              {/* Header Status Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-2">
+                <div className="flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4 text-red-400" />
+                  <span className="text-sm font-bold text-white">
+                    {filteredCourses.length > 0 ? (
+                      <>
+                        Showing {((currentPage - 1) * coursesPerPage) + 1}–{Math.min(currentPage * coursesPerPage, filteredCourses.length)} of {filteredCourses.length} Available Courses
+                      </>
+                    ) : (
+                      '0 Courses Found'
+                    )}
+                  </span>
+                </div>
+
+                {filteredCourses.length > coursesPerPage && (
+                  <span className="text-xs font-medium text-gray-400">
+                    Page {currentPage} of {Math.ceil(filteredCourses.length / coursesPerPage)}
+                  </span>
+                )}
+              </div>
+
+              {/* Loading State */}
+              {loadingCourses ? (
+                <div className="p-12 rounded-3xl bg-[#0f0b15]/90 border border-red-900/40 text-center space-y-3">
+                  <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <p className="text-sm font-semibold text-white">Loading available courses...</p>
+                  <p className="text-xs text-gray-400">Querying backend /api/resources</p>
+                </div>
+              ) : availableCourses.length === 0 ? (
+                /* Empty state when NO courses are found */
+                <div className="p-10 rounded-3xl bg-[#0f0b15]/90 border border-red-900/40 text-center space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-red-950/60 border border-red-800/40 flex items-center justify-center mx-auto text-red-400">
+                    <BookOpen className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white hero-serif">
+                    No Courses Available Yet
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+                    New learning resources and video courses will be shown here once published.
+                  </p>
+                </div>
+              ) : filteredCourses.length === 0 ? (
+                /* Empty state when filter matches nothing */
+                <div className="p-8 rounded-3xl bg-[#0f0b15]/90 border border-red-900/40 text-center space-y-3">
+                  <p className="text-sm text-gray-300">
+                    No available courses match your search criteria.
+                  </p>
+                  <button
+                    onClick={handleResetCourseSearch}
+                    className="text-xs font-semibold text-red-400 hover:underline"
+                  >
+                    Reset filters and show all available courses
+                  </button>
+                </div>
+              ) : (
+                /* Course Cards Displayed One by One */
+                <div className="space-y-4">
+                  {filteredCourses
+                    .slice((currentPage - 1) * coursesPerPage, currentPage * coursesPerPage)
+                    .map((course, idx) => {
+                      const absoluteIndex = ((currentPage - 1) * coursesPerPage) + idx + 1;
+                      return (
+                        <div
+                          key={course.id || `${course.title}-${idx}`}
+                          className="p-6 rounded-3xl bg-[#0f0b15]/95 border border-red-900/40 shadow-xl hover:border-red-600/50 transition-all space-y-4 group"
+                        >
+                          {/* Top Row: Index Badge, Title, Badges */}
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                            <div className="flex items-start space-x-3.5">
+                              {/* Serial Number Badge */}
+                              <div className="w-9 h-9 rounded-xl bg-red-950/70 border border-red-800/40 flex items-center justify-center text-xs font-bold text-red-400 flex-shrink-0 mt-0.5 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                                #{absoluteIndex}
+                              </div>
+
+                              <div>
+                                <h4 className="text-lg font-bold text-white group-hover:text-red-400 transition-colors leading-snug">
+                                  {course.title}
+                                </h4>
+                                <div className="flex items-center space-x-2 text-xs text-gray-400 mt-1">
+                                  <span>Provider: <span className="text-gray-200 font-medium">{course.provider || 'Platform Curated'}</span></span>
+                                  {course.skillName && (
+                                    <>
+                                      <span>•</span>
+                                      <span className="text-red-300">Skill: {course.skillName}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Tags: ResourceType & Free/Paid */}
+                            <div className="flex items-center space-x-2 self-start flex-shrink-0">
+                              <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/40">
+                                {course.resourceType || 'COURSE'}
+                              </span>
+
+                              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                                course.free !== false
+                                  ? 'bg-emerald-950/60 border border-emerald-800/40 text-emerald-400'
+                                  : 'bg-amber-950/60 border border-amber-800/40 text-amber-400'
+                              }`}>
+                                {course.free !== false ? 'FREE ACCESS' : 'PAID'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Middle: Course Description */}
+                          <p className="text-xs sm:text-sm text-gray-300 leading-relaxed pl-0 sm:pl-12">
+                            {course.description || 'Comprehensive learning course and guided technical materials.'}
+                          </p>
+
+                          {/* Bottom Row: Link Button */}
+                          <div className="pt-3 border-t border-red-950/60 flex items-center justify-between pl-0 sm:pl-12">
+                            <span className="text-[11px] font-mono text-gray-500">
+                              Reference ID: #{course.id || '-'}
+                            </span>
+
+                            {course.url ? (
+                              <a
+                                href={course.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-600 shadow-md shadow-red-600/30 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+                              >
+                                <span>Start Course</span>
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                            ) : (
+                              <span className="text-xs text-gray-500 italic">No link provided</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+
+              {/* Pagination Controls (5 per page) */}
+              {!loadingCourses && filteredCourses.length > coursesPerPage && (
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-red-950/60">
+                  <p className="text-xs text-gray-400">
+                    Showing <span className="text-white font-medium">{((currentPage - 1) * coursesPerPage) + 1}</span> to <span className="text-white font-medium">{Math.min(currentPage * coursesPerPage, filteredCourses.length)}</span> of <span className="text-white font-medium">{filteredCourses.length}</span> courses
+                  </p>
+
+                  <div className="flex items-center space-x-2">
+                    {/* Previous Button */}
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1.5 rounded-xl text-xs font-semibold text-gray-300 bg-[#140f1c] border border-red-900/40 hover:bg-red-950/40 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center space-x-1"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Prev</span>
+                    </button>
+
+                    {/* Page Numbers */}
+                    {Array.from(
+                      { length: Math.ceil(filteredCourses.length / coursesPerPage) },
+                      (_, i) => i + 1
+                    ).map((pageNumber) => (
+                      <button
+                        key={pageNumber}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
+                          currentPage === pageNumber
+                            ? 'bg-red-600 text-white shadow-[0_0_12px_rgba(239,68,68,0.5)]'
+                            : 'bg-[#140f1c] text-gray-400 hover:text-white hover:bg-red-950/40 border border-red-900/30'
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    ))}
+
+                    {/* Next Button */}
+                    <button
+                      onClick={() =>
+                        setCurrentPage((p) =>
+                          Math.min(p + 1, Math.ceil(filteredCourses.length / coursesPerPage))
+                        )
+                      }
+                      disabled={currentPage === Math.ceil(filteredCourses.length / coursesPerPage)}
+                      className="px-3 py-1.5 rounded-xl text-xs font-semibold text-gray-300 bg-[#140f1c] border border-red-900/40 hover:bg-red-950/40 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center space-x-1"
+                    >
+                      <span>Next</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 7: VIEW / CREATE / UPDATE STUDENT PROFILE
         ======================================================== */}
         {activeTab === 'viewProfile' && (
           <div className="space-y-6">

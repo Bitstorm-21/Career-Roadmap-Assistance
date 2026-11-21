@@ -8,6 +8,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import AdminPage from './pages/AdminPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -20,6 +21,21 @@ const ProtectedRoute = ({ children }) => {
     );
   }
   return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
+// Admin Only Route Component
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, isAdmin, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#08070b] flex items-center justify-center text-red-500">
+        <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/profile" replace />;
+  return children;
 };
 
 function AppContent() {
@@ -68,6 +84,14 @@ function AppContent() {
               <ProtectedRoute>
                 <DashboardPage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
             }
           />
           {/* Backwards compatibility for /dashboard */}
