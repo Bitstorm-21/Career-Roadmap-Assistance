@@ -1,0 +1,38 @@
+Folder PATH listing for volume New Volume
+Volume serial number is C6E6-C0AC
+D:\5TH SEMESTER\SOFTWARE ENGINEERING\SOFTWARE PROJECT FRONTEND\MY-APP\SRC
+|   App.css
+|   App.jsx
+|   index.css
+|   main.jsx
+|   
++---assets
+|       hero.png
+|       media_1795093783606_53af84d9.jpg
+|       media_1795093888538_3bab1cce.jpg
+|       media_1795094009094_f05a7c4f.png
+|       media_1795094026952_4e121195.png
+|       media_1795094192297_003174c9.png
+|       media_1795094235580_29e16d08.md
+|       react.svg
+|       statue-bg.png
+|       vite.svg
+|       
++---components
+|       Footer.jsx
+|       Navbar.jsx
+|       SkillAssessment.jsx
+|       
++---context
+|       AuthContext.jsx
+|       
++---pages
+|       AdminPage.jsx
+|       DashboardPage.jsx
+|       LandingPage.jsx
+|       LoginPage.jsx
+|       RegisterPage.jsx
+|       
+\---services
+        api.js
+        

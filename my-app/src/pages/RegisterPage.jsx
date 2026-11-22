@@ -84,6 +84,7 @@ const RegisterPage = () => {
                 <input
                   type="text"
                   name="userName"
+                  autoComplete="name"
                   value={formData.userName}
                   onChange={handleChange}
                   placeholder="Enter your username"
@@ -105,6 +106,7 @@ const RegisterPage = () => {
                 <input
                   type="email"
                   name="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
@@ -126,6 +128,7 @@ const RegisterPage = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
