@@ -290,21 +290,7 @@ const AdminPage = () => {
                 <span>Add Learning Resources</span>
               </button>
 
-              {/* Quick Summary Pill in Sidebar */}
-              <div className="pt-4 mt-4 border-t border-red-950/60 px-3 space-y-2">
-                <div className="flex items-center justify-between text-xs text-gray-400">
-                  <span>Backend Port</span>
-                  <span className="font-mono text-emerald-400">10000 • Live</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-400">
-                  <span>AI FastApi</span>
-                  <span className="font-mono text-emerald-400">8000 • Live</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-400">
-                  <span>Target DB</span>
-                  <span className="font-mono text-gray-300">PostgreSQL</span>
-                </div>
-              </div>
+
             </div>
           </div>
 

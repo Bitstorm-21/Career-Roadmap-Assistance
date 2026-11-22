@@ -158,12 +158,7 @@ const LoginPage = () => {
             </p>
           </div>
 
-          {/* Connected API indicator */}
-          <div className="mt-6 text-center">
-            <span className="text-[11px] text-gray-500 font-mono">
-              Connecting to Spring Boot: <span className="text-emerald-400">/api/auth/login</span>
-            </span>
-          </div>
+
 
         </div>
       </div>

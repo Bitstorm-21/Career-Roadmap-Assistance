@@ -4,6 +4,7 @@
 
 ![Project Banner](my-app/src/assets/hero.png)
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white)](https://career-roadmap-assistance-edwy.vercel.app)
 [![React](https://img.shields.io/badge/React-19.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8.3.6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.3.5-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
@@ -14,9 +15,11 @@
 
 <p align="center">
   <b>A comprehensive, AI-powered career enablement portal built for engineering students and modern tech professionals.</b><br/>
-  <i>5th Semester Software Engineering Capstone Project</i>
+  <i>5th Semester Software Engineering Capstone Project</i><br/><br/>
+  🔗 <b>Live Demo on Vercel:</b> <a href="https://career-roadmap-assistance-edwy.vercel.app"><b>career-roadmap-assistance-edwy.vercel.app</b></a>
 </p>
 
+[🌐 Live Demo](https://career-roadmap-assistance-edwy.vercel.app) •
 [Key Features](#-key-features) •
 [System Architecture](#-system-architecture) •
 [Tech Stack](#-tech-stack) •
@@ -41,6 +44,15 @@ Traditional job-hunting platforms overwhelm students with static listings withou
 4. **Interactive Role-Based Skill Assessments** spanning foundational CS, Cloud/DevOps, AI/ML, and Cybersecurity.
 5. **Curated Learning Resource Directory** with free/paid filtering and provider badges.
 6. **Role-Based Admin Control Center** for managing curriculum tracks, learning resources, and monitoring system metrics.
+
+---
+
+## 🌐 Live Deployment
+
+The web application is live and hosted on Vercel:
+- **Production URL**: [https://career-roadmap-assistance-edwy.vercel.app](https://career-roadmap-assistance-edwy.vercel.app)
+- **Deployment Platform**: Vercel (Global Edge Network)
+- **Status**: 🟢 Active & Online
 
 ---
 
