@@ -21,6 +21,7 @@
 
 [🌐 Live Demo](https://career-roadmap-assistance-edwy.vercel.app) •
 [Key Features](#-key-features) •
+[Screenshots](#-screenshots) •
 [System Architecture](#-system-architecture) •
 [Tech Stack](#-tech-stack) •
 [Project Structure](#-project-structure) •
@@ -107,6 +108,75 @@ Rigorous 15-question assessments tailored to industry hiring bars:
 - Real-time system analytics (total users, active careers, skill catalog count, assessments taken).
 - Career Management: Create new career tracks and configure required skill matrices.
 - Resource Catalog Management: Ingest new courses and learning materials with provider metadata.
+
+---
+
+## 📸 Screenshots
+
+### AI Roadmap Generator
+Generate personalized weekly learning roadmaps by selecting a target career, experience level, and duration.
+
+![AI Roadmap Generator](my-app/screenshots/01-ai-roadmap-generator.jpg)
+
+### Semantic Gap Analysis
+AI-powered skill gap analysis comparing your skills against career role requirements with synergy scores and strategic recommendations.
+
+![Semantic Gap Analysis](my-app/screenshots/02-semantic-gap-analysis.jpg)
+
+### My Skills Inventory
+Add, manage, and track your technical skills with proficiency levels and years of experience.
+
+![My Skills Inventory](my-app/screenshots/03-my-skills-inventory.jpg)
+
+### Skill Assessments Catalog
+Choose from role-based assessments (Fresher Software Engineer, Cloud & DevOps, AI/ML, Cybersecurity) with difficulty breakdowns.
+
+![Skill Assessments Catalog](my-app/screenshots/04-skill-assessments-catalog.jpg)
+
+### Assessment Questions
+Interactive MCQ quiz engine with difficulty tags, topic labels, and instant answer explanations.
+
+![Assessment Questions](my-app/screenshots/05-assessment-questions.jpg)
+
+### Assessment Results
+Detailed performance diagnostic report with score breakdown by difficulty, topic mastery analysis, and retake options.
+
+![Assessment Results](my-app/screenshots/06-assessment-results.jpg)
+
+### Learning Resources
+Browse and search curated courses from providers like Coursera, DeepLearning.AI, and freeCodeCamp with free/paid badges.
+
+![Learning Resources](my-app/screenshots/07-learning-resources.jpg)
+
+### Update Profile Form
+Edit academic details, graduation year, degree, GitHub/LinkedIn URLs, and professional bio.
+
+![Update Profile Form](my-app/screenshots/08-update-profile-form.jpg)
+
+### View Profile
+Student profile page showing academic background, social links, skill stats, and roadmap counts.
+
+![View Profile](my-app/screenshots/09-view-profile.jpg)
+
+### Resume ATS Review
+Upload a PDF resume or paste text to get an AI-powered ATS compatibility score with feedback and extracted skills.
+
+![Resume ATS Review](my-app/screenshots/10-resume-ats-review.jpg)
+
+### Admin Dashboard
+Admin portal with real-time platform metrics: total users, configured careers, recognized skills, assessments, and published resources.
+
+![Admin Dashboard](my-app/screenshots/11-admin-dashboard.jpg)
+
+### Admin — Add Careers
+Admin interface to manage career tracks with category tags, descriptions, and dynamic synchronization to the roadmap generator.
+
+![Admin Add Careers](my-app/screenshots/12-admin-add-careers.jpg)
+
+### Admin — Add Learning Resources
+Admin panel to publish and manage learning resources with provider metadata, skill tags, and free/paid classification.
+
+![Admin Learning Resources](my-app/screenshots/13-admin-learning-resources.jpg)
 
 ---
 
