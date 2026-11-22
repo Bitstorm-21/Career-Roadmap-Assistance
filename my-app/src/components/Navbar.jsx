@@ -31,12 +31,6 @@ const Navbar = () => {
           <a href="/home#how-it-works" className="hover:text-red-400 transition-colors duration-200">
             How it works
           </a>
-          <a href="/home#about" className="hover:text-red-400 transition-colors duration-200">
-            About
-          </a>
-          <a href="/home#pricing" className="hover:text-red-400 transition-colors duration-200">
-            Pricing
-          </a>
         </div>
 
         {/* Right Action Buttons */}
