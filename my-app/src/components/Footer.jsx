@@ -74,6 +74,17 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-red-950/30 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
           <p>© {new Date().getFullYear()} AI Career Assistance. All rights reserved.</p>
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <a
+              href="https://career-roadmap-assistance-edwy.vercel.app"
+              target="_blank"
+              rel="noreferrer"
+              className="text-gray-400 hover:text-red-400 transition-colors"
+            >
+              Live: career-roadmap-assistance-edwy.vercel.app
+            </a>
+          </div>
         </div>
       </div>
     </footer>
